@@ -18,6 +18,8 @@ public class OrderCreatedConsumer {
     public void onMessage(OrderCreatedMessage message) {
         log.debug("주문 생성 감지");
 
+        // RabbitMQ 서버의 리슨을 담당하는 쓰레드는 MDC의 존재를 모르는 리스터 전용
+        // 반드시 MDC 를 재저장 해야함
         MDC.put("requestId", message.getRequestId());
 
         try {
