@@ -1,0 +1,19 @@
+server:
+  port: 8881
+
+spring:
+  application:
+    name: saga-config
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/qwer1324897/saga-repo.git
+          default-label: main
+          username: qwer1324897
+          password: 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
+
+          clone-on-start: true  # 서버 가동 시 즉시 git clone
+          force-pull: true
+

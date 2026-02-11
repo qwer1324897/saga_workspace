@@ -1,0 +1,9 @@
+### 주문 요청 json 이용 (POST)
+
+POST http://localhost:8883/api/orders
+Content-Type: application/json
+
+{
+    "orderId":"13",
+    "orderName":"아이폰 17 PRO MAX"
+}

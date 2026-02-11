@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: saga-order
+
+  profiles:
+    active: dev
+
+  config:
+    import: "optional:configserver:http://localhost:8881"
+
+logging:
+  level:
+    root: info

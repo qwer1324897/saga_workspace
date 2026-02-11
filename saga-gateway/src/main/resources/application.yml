@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: saga-gateway
+
+  profiles:
+    active: dev
+
+  config:
+    import: "optional:configserver:http://localhost:8881"

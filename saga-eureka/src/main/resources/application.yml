@@ -1,0 +1,20 @@
+# 포트번호는 github repo 에
+spring:
+  application:
+    name: saga-eureka
+
+  # 아래의 프로파일 명이 Config Server 로 하여금 어떤 yml 을 읽어서 전달해줄지를 결정함.
+  profiles:
+    active: dev  # 지금은 개발이니까 dev 고, 나중에 맞춰서 변경.
+
+  config:
+    import: "optional:configserver:http://localhost:8881"
+
+logging:
+  level:
+    root: info
+
+
+server:
+  port: 8883
+
