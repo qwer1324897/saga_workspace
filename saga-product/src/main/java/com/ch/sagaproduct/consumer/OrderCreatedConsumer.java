@@ -4,8 +4,10 @@ import com.ch.sagaproduct.message.OrderCreatedMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
 
 @Slf4j
+@Component
 public class OrderCreatedConsumer {
 
     // 주의. 현재 시점 만들고 있는 재고관리 앱에서는 주문완료 처리에 대해 웹 상의 요청,

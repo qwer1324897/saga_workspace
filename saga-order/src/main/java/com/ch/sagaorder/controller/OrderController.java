@@ -21,10 +21,10 @@ public class OrderController {
     // 주문 요청 처리
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody CreateOrderRequest request) { // 객체화 되어있어야 json 자동 매핑
-        log.debug("상품의 pk 값은: {}", request.getProduct_id());
-        log.debug("상품의 이름은: {}", request.getProduct_name());
+        log.debug("상품의 pk 값은: {}", request.getProductId());
+        log.debug("상품의 이름은: {}", request.getProductName());
 
-        orderPublishService.createAndPublish(request.getProduct_id(), request.getProduct_name());
+        orderPublishService.createAndPublish(request.getProductId(), request.getProductName());
 
         return ResponseEntity.ok("oooooooooooooook");
     }

@@ -10,4 +10,4 @@ spring:
 
 logging:
   level:
-    root: info
+    com.ch.sagaorder.controller: debug

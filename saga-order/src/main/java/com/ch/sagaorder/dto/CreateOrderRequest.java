@@ -1,12 +1,13 @@
 package com.ch.sagaorder.dto;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Setter @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class CreateOrderRequest {
-    private Long product_id;
-    private String product_name;
+    private Long productId;
+    private String productName;
 }
