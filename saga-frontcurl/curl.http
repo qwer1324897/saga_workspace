@@ -4,6 +4,6 @@ POST http://localhost:8883/api/orders
 Content-Type: application/json
 
 {
-    "productId":"12",
+    "productId":"27",
     "productName":"아이폰 17 PRO MAX"
 }

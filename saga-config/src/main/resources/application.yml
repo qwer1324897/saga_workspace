@@ -12,8 +12,19 @@ spring:
           uri: https://github.com/qwer1324897/saga-repo.git
           default-label: main
           username: qwer1324897
-          password: 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
+          password: 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
 
           clone-on-start: true  # 서버 가동 시 즉시 git clone
           force-pull: true
 
+# Config Server 에 한해서만 아래의 설정을 Git Repo 뿐만 아니라 로컬 applicaiton.yml 에도 설정해야 돌아감;;
+
+management:
+  endpoints:
+    web:
+      exposure: # 웹(HTTP)을 통해 어떤 관리용 창구(Endpoint)를 열어줄지 결정
+        include: health, info, prometheus
+        #health(앱의 생존 여부), info(앱의 정보), prometheus(프로메테우스가 읽어갈 수 있는 정보)
+
+  prometheus:  # 위에서 노출한 prometheus 엔드 포인트를 활성화
+    access: unrestricted  # 원래 이전 버전에서는 true/false 를 사용했지만, SpringBoot 3.5 버전부터 access 로 변경됨.

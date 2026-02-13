@@ -8,8 +8,14 @@ spring:
   config:
     import: "optional:configserver:http://localhost:8881"
 
+  # 업로드 설정
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
 logging:
   level:
-    com.ch.sagaproduct.consumer.OrderCreatedConsumer: debug
-server:
-  port: 9992
+    com.ch.sagaproduct: debug
+
+

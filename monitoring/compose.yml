@@ -1,0 +1,41 @@
+# compose.yml
+# 목적
+# Prometheus (프로메테우스) - 매트릭(수치화 된 데이터)을 수집.
+# Grafana(그라파나) - 데이터 시각화 플랫폼
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: saga-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      # 호스트의 yml 파일을 컨테이너 안의 설정 경로로 마운트함
+      # ro (readonly) 로 컨테이너가 읽기만 하고 수정은 못하게 함
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+    command:  # 컨테이너가 시작될 때 실행할 명령어 정의
+      - "--config.file=/etc/prometheus/prometheus.yml" #프로메테우스에게 설정파일의 경로와 이름을 알려줘서 이걸 보고 시작하라는 뜻.
+    restart: unless-stopped # 컨테이너가 얘기치 않게 종료되었을 때, 알아서 자동으로 재가동하는 설정. 개발자가 직접 docker stop 으로 멈추면 재시작 안 함.
+
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: saga-grafana
+    ports:
+      - "3000:3000"  # 웹브라우저에서 localhost:3000 으로 접속하여 시각화된 대시보드를 확인할 수 있음.
+
+    environment:  # 컨테이너 내부에서 사용 할 환경변수를 의미.
+      - GF_SECURITY_ADMIN_USER=liveshop
+      - GF_SECURITY_ADMIN_PASSWORD=1234
+
+    volumes:  # 호스트의 데이터 또는 파일을 컨테이너와 공유
+      # 보통 grafana 를 처음 가동하면 개발자가 웹브라우저로 접속해서 다음과 같은 일을 수동으로 일일이 해야함.
+      # 1. 어떤 데이터를 시각화 할 지 데이터 소스 등록.
+      # 2. 대시보드 생성. 어떤 그래프로 그릴지 설정 등.
+      # 이러한 일들을 provisioning 디렉토리에 yml 로 설정해두면, grafana 가 가동되자마자 yml 파일을 읽어서 자동으로 세팅을 해줌.
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro  # ro(read only) 로 경로와 파일을 알려줌.
+
+    depends_on:  # 서비스 의존성을 정의.
+      - prometheus # 프로메테우스가 먼저 실행된 후에 그라파나를 실행하도록 정해주는 아주 아주 중요한 옵션.
+

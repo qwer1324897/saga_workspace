@@ -39,6 +39,12 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.amqp:spring-rabbit-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // 프로메테우스에게 매트릭(수치화 된 데이터) 제공하기
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'
 }
 
 dependencyManagement {

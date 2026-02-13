@@ -1,0 +1,48 @@
+# prometheus.yml
+# 목적
+# Prometheus 가 MSA의 모든 서비스(Config, Eureka, Gateway, api(saga-order, saga-product)) 의 /actuator/prometheus 엔드 포인트를
+# 주기적으로 스크랩하도록 설정.
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  # Config Server
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  - job_name: "saga-config"
+    metrics_path: "/actuator/prometheus"  # http:localhost:8881/actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:8881"]
+
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  # Eureka Server
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  - job_name: "saga-eureka"
+    metrics_path: "/actuator/prometheus"  # http:localhost:8761/actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:8761"]
+
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  # Gateway Server
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  - job_name: "saga-gateway"
+    metrics_path: "/actuator/prometheus"  # http:localhost:8883/actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:8883"]
+
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  # Order Server
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  - job_name: "saga-order"
+    metrics_path: "/actuator/prometheus"  # http:localhost:9991/actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:9991"]
+
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  # Product Server
+  #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+  - job_name: "saga-product"
+    metrics_path: "/actuator/prometheus"  # http:localhost:9992/actuator/prometheus
+    static_configs:
+      - targets: ["host.docker.internal:9992"]

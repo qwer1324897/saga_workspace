@@ -1,0 +1,13 @@
+# datasources.yml
+# 목적
+# 그라파나가 어디서 데이터를 가져올 지 미리 설정해 두는 데이터 소스 프로비저닝 설정 파일
+# Grafana 가 가동될 때 Prometheus 를 자동으로 데이터 소스로 등록.(수동으로 설정하지 않게)
+apiVersion: 1
+
+datasources: # 지금부터 데이터를 가져올 곳들을 목록으로 적겠다 라는 뜻.
+  - name: Prometheus # 그라파나 대시보드의 UI 에서 보여질 이름을 세팅.
+    type: prometheus # 데이터 소스의 종류를 지정함. 그라파나는 다양한 DB 를 지원하므로, 프로메테어스 형식을 명시.
+    access: proxy # 접속 방식을 결정. proxy 는 사용자의 브라우저가 아닌, 그라파나 서버가 직접 프로메테어스에 접속해서 데이터를 가져오겠다는 뜻.(권장설정)
+    url: http://prometheus:9090  # 프로메테어스가 제공하는 대시보드 URL
+    isDefault: true  # 대시보드를 만들 때, 여러 데이터 소스 중 기본값을 얘로(prometheus) 사용하겠다는 설정.
+    editable: true  # 그라파나 웹 화면에 접속해서 이 설정 내용을 수정할 수 있게 허용할지 여부. false 면 화면에서 수정이 안 됨.

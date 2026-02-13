@@ -23,10 +23,10 @@ ext {
 }
 
 dependencies {
-    /*
-    MSA 환경에서 Eureka, K8s(쿠버네티스) 의 경우 Config Server 가 살아있는지 주기적으로 확인하는데, 이 때 Actuator 가 필요함.
-    */
+    // MSA 환경에서 Eureka, K8s(쿠버네티스) 의 경우 Config Server 가 살아있는지 주기적으로 확인하는데, 이 때 Actuator 가 필요함.
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    // 프로메테우스에게 매트릭(수치화 된 데이터) 제공하기
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     implementation 'org.springframework.cloud:spring-cloud-config-server'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

@@ -16,6 +16,9 @@ public class OrderCreatedConsumer {
     // 다만 재고관리팀으로 주문 이외의 다른 요청에 대해서는 충분히 컨트롤러에서 요청을 처리할 수도 있음.
     // 가령 배송관리팀이 재고관리팀에게 현재 재고량을 요청한다면? > Controller 에서 요청을 받아 처리해야 함. 이 땐 헤더로 requestId가 넘어옴.
 
+    // 우리는 지금 HTTP로 요청받는 게 아니라 RabbitMQ라는 전용선을 쓰고 있음. 그러니까 '헤더'를 뒤져서 ID를 찾는 코드는 짤 필요가 없고,
+    // 대신 메시지 객체 안에서 ID를 찾아야 한다는 뜻.
+
     @RabbitListener(queues = "order.created.queue")  // Listener 에는 json 문자열을 > java 객체로 자동변환해주는 기능이 이미 포함되어 있음.
     public void onMessage(OrderCreatedMessage message) {
         log.debug("주문 생성 감지");
