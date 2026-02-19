@@ -114,7 +114,7 @@ jobs:
           for i in {1..60}; do # 세미콜론(;)과 do 필수
             if mysqladmin ping -h 127.0.0.1 -uroot -p1234 --silent; then
               echo "MySQL is UP"
-              break # 성공적으로 연결되었으니, 이 작업을 종료함
+              exit 0 # 성공적으로 연결되었으니, 이 작업을 종료함
             fi
             echo "waiting mysql...($i)"
             sleep 2 # 2초 동안 쉼(반복문은 너무 빠르므로)
