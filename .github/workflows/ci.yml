@@ -27,6 +27,11 @@ jobs:
   build-test: # 빌드와 테스트라는 이름의 작업을 정의
     runs-on: ubuntu-latest # 깃헙이 빌려주는 최신 리눅스에서 실행
 
+    # 이 설정을 추가하면 모든 run 명령어의 기준 경로가 서비스 폴더가 됨.
+    defaults:
+      run:
+        working-directory: ./saga-member-service
+
 #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 # [3] 공통 환경 변수 설정 (위치: jobs.[job_id].env)
 #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 애플리케이션이 접속할 DB 설정 ㅡㅡㅡㅡㅡㅡㅡㅡ
