@@ -2,8 +2,10 @@ spring:
   application:
     name: saga-gateway
 
-  profiles:
-    active: dev
+#  profiles:
+#    active: dev
+
+# 이것도 설정으로. notion에 있음
 
   config:
     import: "optional:configserver:http://localhost:8881"
@@ -11,7 +13,3 @@ spring:
 
 
 
-
-  cloud:
-    gateway:
-      globalcors:

@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  mysql-member:
+    image: mysql:8.0
+    container_name: mysql-member
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: memberdb
+      MYSQL_USER: qwer
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "4444:3306"
+    volumes:
+      - mysql_member_data:/var/lib/mysql
+
+  redis:
+    image: redis:7
+    container_name: redis-db
+    restart: unless-stopped
+    ports:
+      - "5555:6379"
+    volumes:
+      - redis_data:/data
+
+  # RabbitMQ 서버
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    container_name: rabbitmq
+    restart: unless-stopped
+    environment:
+      RABBITMQ_DEFAULT_USER: liveshop
+      RABBITMQ_DEFAULT_PASS: 1234
+      TZ: Asia/Seoul
+    ports:
+      - "5672:5672" # 애플리케이션 통신용(AMQP)
+      - "15672:15672" # 웹용 대시보드를 지원함.
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq # 볼륨을 지정하지 않으면 컨테이너 삭제 시 DB 날아감
+
+volumes:
+  mysql_member_data:
+  redis_data:
+  rabbitmq_data:

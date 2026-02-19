@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: saga-member-service
+
+  # CI를 위해선 반드시 optional로 설정을 해야한다.
+  # 하지 않으면 CI 테스트에서 실패하게 됨 CI 설정에서 config server 를 껐기 때문.
+  config:
+    import: "optional:configserver:http://localhost:8881"
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.orm.jdbc.bind: trace
+    org.flywaydb: info

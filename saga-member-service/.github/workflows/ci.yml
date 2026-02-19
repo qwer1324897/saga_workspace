@@ -1,0 +1,149 @@
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+# CI(지속적 통합) 파이프라인 구축
+# CI 의 업무 시작은 개발자가 자신의 깃헙 저장소로 push 할 때 발생
+# 산출물: JAR
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+# [1] 워크플로우 이름 및 시작 조건
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+name: member-service CI # 깃헙 액션 대시보드에 표시될 이 작업의 이름(별명)
+
+on: # 이 작업을 언제 시작할지 지금부터 서술
+  push: #개발자가 push 할 때 (자신의 깃헙에)
+    branches: ["main"] # main 브랜치에 코드가 push 될 때 작업 시작
+
+  pull_request: # 그리고 main 브랜치로 코드를 합처달라는 요청이 들어올 때도(PR), 작업 시작
+    branches: ["main"]
+
+concurrency: # 동시에 작업이 겹칠 때의 규칙
+  group: ci-${{ github.ref }} # 같은 브랜치에서 일어나는 작업까지 묶어서
+  cancel-in-progress: true # 새 코드가 들어오면 이전에 돌고있던 빌드는 취소
+
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+# [2] 실행 환경 및 가상 DB 설정
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+jobs:
+  build-test: # 빌드와 테스트라는 이름의 작업을 정의
+    runs-on: ubuntu-latest # 깃헙이 빌려주는 최신 리눅스에서 실행
+
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+# [3] 공통 환경 변수 설정 (위치: jobs.[job_id].env)
+#ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ 애플리케이션이 접속할 DB 설정 ㅡㅡㅡㅡㅡㅡㅡㅡ
+
+    env: # 이 작업 전체에서 공통으로 사용할 변수들
+      SERVICE_NAME: saga-member-service # 나중에 결과물 이름에 사용할 이름표
+      GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.jvmargs=-Xmx2g" # Gradle 메모리를 2GB 로 제한.
+
+      SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/liveshop
+      SPRING_DATASOURCE_USERNAME: liveshop
+      SPRING_DATASOURCE_PASSWORD: "1234"
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: com.mysql.cj.jdbc.Driver
+
+      # FlyWay 사용 시
+      SPRING_FLYWAY_ENABLED: "true" # flyway 를 켜서 테이블을 자동으로 만들게 함
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate # JPA 는 테이블 구조가 SQL 파일과 맞는지 검증만 하면 됨.
+
+      # CI 환경에서는 Config Server 가 없으므로, Config Server 무력화
+      SPRING_CLOUD_CONFIG_ENABLED: "false"  # cofing server 끄기.
+      SPRING_CONFIG_IMPORT: "optional:none" # config server 를 아예 찾지 말라는 명령어.
+      SPRING_CLOUD_CONFIG_FAIL_FAST: "false" # config server 연결에 실패해도 빌드를 멈추지 말라는 명령어.
+
+    #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ MySQL 서버 CI에서 컨테이너로 실행하기 위한 설정 ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    services:
+      mysql: # mysql 컨테이너로 띄우겠다
+        image: mysql:8.0
+        ports:
+          - 3306:3306 # 외부(호스트) 3306과 내부(컨테이너) 3306을 연결함
+
+        env: # DB 접속을 위한 사용자 및 비밀번호 생성. (여기서 사용자 및 비번이 동적으로 생성.)
+          MYSQL_DATABASE: liveshop
+          MYSQL_USER: liveshop
+          MYSQL_PASSWORD: "1234"
+          MYSQL_ROOT_PASSWORD: "1234"  # 루트 계정의 비밀번호를 1234로 설정
+
+        options: >- # DB 가 완전히 켜졌는지 확인하는 health check 명령어.
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p1234 --silent"
+          --health-interval=20s
+          --health-timeout=5s
+          --health-retries=10
+
+    #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    # [4] 실행 단계
+    #ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+    steps:
+      # 1단계: 내 코드를 가상 리눅스 컴퓨터로 가져오기
+      - name: Checkout
+        uses: actions/checkout@v4 # 깃헙에서 공식적으로 만든 코드 가져오기 전용 도구
+
+      # 2단계: JAVA 21 버전 설치
+      - name: Set up JAVA 21(Temurin)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle # 라이브러리를 캐시해서 다음 빌드 땐 더 빠르게 만들기
+
+      # 3단계: Gradle 에 실행 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # 4단계: DB 상태 확인을 위해 MySQL 클라이언트 리눅스에 설치
+      - name: Install MySQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y mysql-client
+
+      # 5단계: 현재 설정된 정보들을 로그에 찍어 확인.
+      - name: Print environment
+        run: |
+          echo "SERVICE_NAME=${SERVICE_NAME}"
+          echo "SPRING_CONFIG_IMPORT=${SPRING_CONFIG_IMPORT}"
+          echo "SPRING_CLOUD_CONFIG_ENABLED=${SPRING_CLOUD_CONFIG_ENABLED}"
+          java -version
+          ./gradlew -v
+
+      # 6단계: MySQL이 켜질 떄까지 최대 2분 동안 기다림
+      - name: Wait for MySQL
+        run: |
+          for i in {1..60}; do # 세미콜론(;)과 do 필수
+            if mysqladmin ping -h 127.0.0.1 -uroot -p1234 --silent; then
+              echo "MySQL is UP"
+              break # 성공적으로 연결되었으니, 이 작업을 종료함
+            fi
+            echo "waiting mysql...($i)"
+            sleep 2 # 2초 동안 쉼(반복문은 너무 빠르므로)
+          done
+          
+          echo "MySQL failed to start.." # 120초 동안 기다렸음에도 반응이 없음.
+          exit 1 # 실패 시 빌드 중단. 결국 myslq 접속은 실패 상태로 이 작업을 종료...ㅜ
+
+      # 7단계: 테스트 코드 돌림(제일 중요한 순간!!)
+      # 테스트란, CI 의 목적이면서 가장 마지막 단계임. 즉 문제가 없는 코드만 CD 를 수행하기 위한 선행작업
+      - name: Test
+        env:
+          SPRING_PROFILES_ACTIVE: test # test 프로필을 써서 로컬 설정과 섞이지 않게 함
+          SPRING_CLOUD_CONFIG_ENABLED: "false"  # cofing server 끄기.
+          SPRING_CLOUD_CONFIG_FAIL_FAST: "false" # config server 연결에 실패해도 빌드를 멈추지 말라는 명령어.
+          SPRING_CONFIG_IMPORT: "optional:none" # config server 를 아예 찾지 말라는 명령어.
+
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/liveshop
+          SPRING_DATASOURCE_USERNAME: liveshop
+          SPRING_DATASOURCE_PASSWORD: "1234"
+
+          # FlyWay 사용 시
+          SPRING_FLYWAY_ENABLED: "true" # flyway 를 켜서 테이블을 자동으로 만들게 함
+          SPRING_JPA_HIBERNATE_DDL_AUTO: validate # JPA 는 테이블 구조가 SQL 파일과 맞는지 검증만 하면 됨.
+        run: ./gradlew test
+
+      # 8단계: 테스트가 통과되면 실제 실행 파일인 JAR 생성
+      - name: Build bootJar
+        run: ./gradlew bootJar
+
+      # 9단계: 가상 리눅스가 만든 JAR 파일을 깃헙 웹사이트에 업로드해 보관
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.SERVICE_NAME }}-${{ github.sha }} # JAR 파일을 이름표-커밋번호 형식으로 저장해달라는 뜻
+          path: build/libs/*.jar # 가상 리눅스 디렉토리에 있는 jar 파일이 위치할 경로
+          if-no-files-found: error # 파일이 없으면 에러를 발생시켜라

@@ -4,8 +4,10 @@ spring:
     name: saga-eureka
 
   # 아래의 프로파일 명이 Config Server 로 하여금 어떤 yml 을 읽어서 전달해줄지를 결정함.
-  profiles:
-    active: dev  # 지금은 개발이니까 dev 고, 나중에 맞춰서 변경.
+#  profiles:
+#    active: dev  # 지금은 개발이니까 dev 고, 나중에 맞춰서 변경.
+  # 이건 매번 코드를 수정해야 하니, 인텔리제이 설정으로 동적으로 설정.
+  # notion에 기록되어 있음
 
   config:
     import: "optional:configserver:http://localhost:8881"

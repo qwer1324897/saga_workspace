@@ -12,7 +12,7 @@ spring:
           uri: https://github.com/qwer1324897/saga-repo.git
           default-label: main
           username: qwer1324897
-          password: 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
+          password: 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
 
           clone-on-start: true  # 서버 가동 시 즉시 git clone
           force-pull: true
