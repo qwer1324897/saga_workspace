@@ -144,11 +144,12 @@ jobs:
       # 8단계: 테스트가 통과되면 실제 실행 파일인 JAR 생성
       - name: Build bootJar
         run: ./gradlew bootJar
+        
 
       # 9단계: 가상 리눅스가 만든 JAR 파일을 깃헙 웹사이트에 업로드해 보관
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.SERVICE_NAME }}-${{ github.sha }} # JAR 파일을 이름표-커밋번호 형식으로 저장해달라는 뜻
-          path: build/libs/*.jar # 가상 리눅스 디렉토리에 있는 jar 파일이 위치할 경로
+          path: saga-member-service/build/libs/*.jar # 가상 리눅스 디렉토리에 있는 jar 파일이 위치할 경로
           if-no-files-found: error # 파일이 없으면 에러를 발생시켜라
